@@ -3,6 +3,7 @@ import tkinter as tk
 from tkinter import ttk
 from PIL import Image, ImageTk
 from ultralytics import YOLO
+from deepface import DeepFace
 
 # Initialize YOLO model for face detection
 model = YOLO('yolov8n-face.pt')  # Ensure this is the correct path to your YOLO model
@@ -83,8 +84,8 @@ def process_frame():
                     age, gender = predict_age_gender_knn(face_resized)
                 elif algorithm_choice.get() == "SVM":
                     age, gender = predict_age_gender_svm(face_resized)
-                elif algorithm_choice.get() == "CNN":
-                    age, gender = predict_age_gender_cnn(face_resized)
+                elif algorithm_choice.get() == "DeepFace":
+                    age, gender = deepfacePrediction(face)
                 else:
                     age, gender = "N/A", "N/A"
 
@@ -113,8 +114,23 @@ def predict_age_gender_svm(face):
     return "20-25", "Female"  # Placeholder return values
 
 
-def predict_age_gender_cnn(face):
-    return "30-35", "Male"  # Placeholder return values
+def deepfacePrediction(face):
+    # Convert face to the required format
+    face = cv2.cvtColor(face, cv2.COLOR_BGR2RGB)
+    result = DeepFace.analyze(face, actions=['age', 'gender'], enforce_detection=False)
+
+    # Print result for debugging
+    print("Result type:", type(result))
+    print("Result content:", result)
+
+    # Assuming result is a list of dictionaries
+    if isinstance(result, list) and len(result) > 0:
+        age = str(result[0]['age'])
+        gender = str(result[0]['gender'])
+    else:
+        age = "unknown"
+        gender = "unknown"
+    return age, gender
 
 
 # Modern style
@@ -171,7 +187,7 @@ style.map(
     arrowcolor=[('hover', 'black')]
 )
 
-combo_algorithms = ttk.Combobox(frame_controls, textvariable=algorithm_choice, values=["KNN", "SVM", "CNN"],
+combo_algorithms = ttk.Combobox(frame_controls, textvariable=algorithm_choice, values=["KNN", "SVM", "DeepFace"],
                                 state="readonly", style='TCombobox')
 combo_algorithms.grid(row=1, column=1, padx=20, pady=20)
 

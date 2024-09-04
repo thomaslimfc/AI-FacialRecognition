@@ -6,4 +6,8 @@ Check for installed pip and Python versions
     pip --version
 
 Install necessary libs with pip
-pip install ultralytics opencv-python
+    pip install ultralytics opencv-python
+
+
+# Deepface Algotithm
+    pip install deepface
