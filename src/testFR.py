@@ -74,7 +74,8 @@ def process_frame():
                             face = frame[y1:y2, x1:x2]
                             faces.append((face, (x1, y1, x2, y2)))
                             face_count += 1
-                            draw_text_with_stroke(frame, f'{score:.2f}', (x1, y1 - 10), font_scale=0.9, color=(0, 255, 255), stroke_color=(0, 0, 0))
+                            # Remove or comment out this line to not display the confidence score
+                            # draw_text_with_stroke(frame, f'{score:.2f}', (x1, y1 - 10), font_scale=0.9, color=(0, 255, 255), stroke_color=(0, 0, 0))
 
             # Apply the selected algorithm for each detected face
             for face, (x1, y1, x2, y2) in faces:
@@ -104,6 +105,7 @@ def process_frame():
 
         # Call process_frame again after 10 ms
         root.after(10, process_frame)
+
 
 
 def predict_age_gender_knn(face):
