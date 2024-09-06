@@ -20,9 +20,25 @@ algorithm_choice = tk.StringVar(value="KNN")  # Default to KNN
 results_text = tk.StringVar(value="Results will be displayed here.")
 
 
+def list_video_devices():
+    index = 0
+    while True:
+        cap = cv2.VideoCapture(index)
+        if cap.isOpened():
+            print(f"Device index {index} is available")
+            cap.release()
+        else:
+            break
+        index += 1
+
+list_video_devices()
+
+
 def start_camera():
     global video_capture
     video_capture = cv2.VideoCapture(0)
+    # index 0: laptop original webcam
+    # video_capture = cv2.VideoCapture(0)
     process_frame()
 
 
@@ -105,7 +121,6 @@ def process_frame():
 
         # Call process_frame again after 10 ms
         root.after(10, process_frame)
-
 
 
 def predict_age_gender_knn(face):
