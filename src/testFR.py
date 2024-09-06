@@ -1,18 +1,19 @@
 import cv2
 import tkinter as tk
+import insightface
 from tkinter import ttk
 from PIL import Image, ImageTk
 from ultralytics import YOLO
 from deepface import DeepFace
 
 # Initialize YOLO model for face detection
-model = YOLO('yolov8n-face.pt')  # Ensure this is the correct path to your YOLO model
+model = YOLO('yolov8n-face.pt')
 
 # Create the main window
 root = tk.Tk()
-root.title("YOLOv8 for Facial Recognition with Age and Gender Prediction")
+root.title("Face Recognition and Detail Estimation System")
 root.geometry("900x700")
-root.configure(bg="#e0e0e0")  # Light grey background for modern look
+root.configure(bg="#e0e0e0")
 
 # Global variables for video capture and algorithm choice
 video_capture = None
@@ -30,6 +31,7 @@ def list_video_devices():
         else:
             break
         index += 1
+
 
 list_video_devices()
 
@@ -64,6 +66,7 @@ def draw_text_with_stroke(image, text, position, font=cv2.FONT_HERSHEY_SIMPLEX, 
     # Draw the actual text on top
     cv2.putText(image, text, position, font, font_scale, color, 2, cv2.LINE_AA)
 
+
 def process_frame():
     global video_capture
 
@@ -79,6 +82,7 @@ def process_frame():
             face_count = 0
             result_str = ""
 
+            # is this where the yellow box is from?
             # Process each detected face
             for result in results:
                 if result.boxes is not None:
@@ -91,23 +95,26 @@ def process_frame():
                             faces.append((face, (x1, y1, x2, y2)))
                             face_count += 1
                             # Remove or comment out this line to not display the confidence score
+                            # yo apa ini man -GT
                             # draw_text_with_stroke(frame, f'{score:.2f}', (x1, y1 - 10), font_scale=0.9, color=(0, 255, 255), stroke_color=(0, 0, 0))
-
-            # Apply the selected algorithm for each detected face
+            # if-else to select model for use
+            # Apply the selected model for each detected face
             for face, (x1, y1, x2, y2) in faces:
-                face_resized = cv2.resize(face, (128, 128))
+                face_resized = cv2.resize(face, (128, 128))  # why face resized if never used
 
                 if algorithm_choice.get() == "KNN":
                     age, gender = predict_age_gender_knn(face_resized)
-                elif algorithm_choice.get() == "SVM":
-                    age, gender = predict_age_gender_svm(face_resized)
+                elif algorithm_choice.get() == "InsightFace":
+                    age, gender = predict_age_gender_insightface(face)
                 elif algorithm_choice.get() == "DeepFace":
                     age, gender = deepfacePrediction(face)
                 else:
                     age, gender = "N/A", "N/A"
 
                 result_str += f'Face at ({x1},{y1}): Age: {age}, Gender: {gender}\n'
-                draw_text_with_stroke(frame, f'Age: {age}, Gender: {gender}', (x1, y2 + 20), font_scale=0.7, color=(0, 255, 255), stroke_color=(0, 0, 0))
+                draw_text_with_stroke(frame, f'Age: {age}, Gender: {gender}', (x1, y2 + 20), font_scale=0.7,
+                                      color=(0, 255, 255), stroke_color=(0, 0, 0))
+                # that color supposed to be blue why is it yellow
 
             # Update the results text
             results_text.set(f'{result_str}\nDetected Faces: {face_count}')
@@ -119,6 +126,7 @@ def process_frame():
             label_video.imgtk = imgtk
             label_video.configure(image=imgtk)
 
+        #Bro what 10 ms HAHAHHAHAHAH
         # Call process_frame again after 10 ms
         root.after(10, process_frame)
 
@@ -127,18 +135,24 @@ def predict_age_gender_knn(face):
     return "25-30", "Male"  # Placeholder return values
 
 
-def predict_age_gender_svm(face):
-    return "20-25", "Female"  # Placeholder return values
+# GT eh part
+# init InsightFace model
+insightface_model = insightface.app.FaceAnalysis(providers=['CPUExecutionProvider'])
+insightface_model.prepare(ctx_id=0, det_size=(640, 640))
 
-
-from deepface import DeepFace
-import cv2
+def predict_age_gender_insightface(face):
+    face_rgb = cv2.cvtColor(face, cv2.COLOR_BGR2RGB)
+    faces = insightface_model.get(face_rgb)
+    if faces:
+        face_data = faces[0]
+        age = face_data['age']
+        gender = 'Male' if face_data['gender'] > 0.5 else 'Female'
+        return age, gender
+    else:
+        return "Unknown", "Unknown"
 
 
 # LimFangChern
-from deepface import DeepFace
-import cv2
-
 def deepfacePrediction(face):
     # Convert face to the required format
     face = cv2.cvtColor(face, cv2.COLOR_BGR2RGB)
@@ -166,7 +180,7 @@ def deepfacePrediction(face):
             # Map gender terms and get the highest probability
             gender_dict = {gender_mapping.get(gender, gender): prob for gender, prob in gender_dict.items()}
             gender, probability = max(gender_dict.items(), key=lambda item: item[1])
-            gender_formatted = f"{gender} {probability:.2f}%"
+            gender_formatted = f"{gender} {probability:.2f}%"  #need confidence measure for both metrics
         else:
             gender_formatted = "unknown"
 
@@ -218,7 +232,8 @@ def get_age_group(age):
     else:
         return "90+"
 
-# Modern style
+
+# Start of UI app frame
 style = ttk.Style()
 style.configure('TFrame', background='#f5f5f5')
 style.configure('TLabelFrame', background='#f5f5f5', font=('Helvetica', 12, 'bold'))
@@ -272,7 +287,7 @@ style.map(
     arrowcolor=[('hover', 'black')]
 )
 
-combo_algorithms = ttk.Combobox(frame_controls, textvariable=algorithm_choice, values=["KNN", "SVM", "DeepFace"],
+combo_algorithms = ttk.Combobox(frame_controls, textvariable=algorithm_choice, values=["KNN", "InsightFace", "DeepFace"],
                                 state="readonly", style='TCombobox')
 combo_algorithms.grid(row=1, column=1, padx=20, pady=20)
 
