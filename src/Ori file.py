@@ -1,6 +1,5 @@
 import cv2
 import tkinter as tk
-import insightface
 from tkinter import ttk
 from PIL import Image, ImageTk
 from ultralytics import YOLO
@@ -77,12 +76,10 @@ def process_frame():
 
             # Use YOLO for face detection
             results = model(frame)
-
             faces = []
             face_count = 0
             result_str = ""
 
-            # is this where the yellow box is from?
             # Process each detected face
             for result in results:
                 if result.boxes is not None:
@@ -95,17 +92,17 @@ def process_frame():
                             faces.append((face, (x1, y1, x2, y2)))
                             face_count += 1
                             # Remove or comment out this line to not display the confidence score
-                            # yo apa ini man -GT
                             # draw_text_with_stroke(frame, f'{score:.2f}', (x1, y1 - 10), font_scale=0.9, color=(0, 255, 255), stroke_color=(0, 0, 0))
+
             # if-else to select model for use
             # Apply the selected model for each detected face
             for face, (x1, y1, x2, y2) in faces:
-                face_resized = cv2.resize(face, (128, 128))  # why face resized if never used
+                face_resized = cv2.resize(face, (640, 640))  # why face resized if never used
 
                 if algorithm_choice.get() == "KNN":
                     age, gender = predict_age_gender_knn(face_resized)
                 elif algorithm_choice.get() == "InsightFace":
-                    age, gender = predict_age_gender_insightface(face)
+                    age, gender = predict_age_gender_insightface(face_resized)
                 elif algorithm_choice.get() == "DeepFace":
                     age, gender = deepfacePrediction(face)
                 else:
@@ -128,7 +125,7 @@ def process_frame():
 
         #Bro what 10 ms HAHAHHAHAHAH
         # Call process_frame again after 10 ms
-        root.after(10, process_frame)
+        root.after(100, process_frame)
 
 
 def predict_age_gender_knn(face):
@@ -136,20 +133,10 @@ def predict_age_gender_knn(face):
 
 
 # GT eh part
-# init InsightFace model
-insightface_model = insightface.app.FaceAnalysis(providers=['CPUExecutionProvider'])
-insightface_model.prepare(ctx_id=0, det_size=(640, 640))
+
 
 def predict_age_gender_insightface(face):
-    face_rgb = cv2.cvtColor(face, cv2.COLOR_BGR2RGB)
-    faces = insightface_model.get(face_rgb)
-    if faces:
-        face_data = faces[0]
-        age = face_data['age']
-        gender = 'Male' if face_data['gender'] > 0.5 else 'Female'
-        return age, gender
-    else:
-        return "Unknown", "Unknown"
+    return "25-30", "Male"  # Placeholder return values
 
 
 # LimFangChern
