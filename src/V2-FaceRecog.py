@@ -7,7 +7,7 @@ from ultralytics import YOLO
 from deepface import DeepFace
 
 # Initialize YOLO model for face detection
-model = YOLO('yolov8n-face.pt')
+model = YOLO('App/yolov8n-face.pt')
 
 # Create the main window
 root = tk.Tk()
@@ -124,7 +124,6 @@ def process_frame():
             label_video.imgtk = imgtk
             label_video.configure(image=imgtk)
 
-        #Bro what 10 ms HAHAHHAHAHAH
         # Call process_frame again after 10 ms
         root.after(100, process_frame)
 
@@ -139,23 +138,7 @@ insightface_model = insightface.app.FaceAnalysis(providers=['CPUExecutionProvide
 insightface_model.prepare(ctx_id=0, det_size=(640, 640))
 
 def predict_age_gender_insightface(face):
-    # Convert the face to RGB format
-    face_rgb = cv2.cvtColor(face, cv2.COLOR_BGR2RGB)
-
-    # Get face analysis results from the model
-    faces = insightface_model.get(face_rgb)
-
-    # Debugging: Print the number of faces detected by InsightFace
-    print(f"InsightFace detected {len(faces)} faces")
-
-    if len(faces) > 0:
-        face_data = faces[0]
-        age = face_data['age']
-        gender = 'Male' if face_data['gender'] > 0.5 else 'Female'
-        return age, gender
-    else:
-        print("No faces detected by InsightFace")
-        return "Unknown", "Unknown"
+    return "25-30", "Male"  # Placeholder return values
 
 
 # LimFangChern
