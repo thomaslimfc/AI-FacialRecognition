@@ -6,8 +6,8 @@ from tensorflow.keras.layers import Dense, GlobalAveragePooling2D
 from tensorflow.keras.optimizers import Adam
 
 # Define paths for your datasets
-train_dir = 'DataSet/train'
-test_dir = 'DataSet/test'
+train_dir = '../DataSet/train'
+test_dir = '../DataSet/test'
 
 # Define constants
 IMG_HEIGHT, IMG_WIDTH = 224, 224

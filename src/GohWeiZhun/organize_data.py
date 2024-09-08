@@ -6,9 +6,9 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 
 # Directories
-source_dir = 'resized_images'
-train_dir = 'dataset/train'
-test_dir = 'dataset/test'
+source_dir = '../resized_images'
+train_dir = '../DataSet/train'
+test_dir = '../DataSet/test'
 
 # Create necessary directories
 os.makedirs(train_dir, exist_ok=True)
