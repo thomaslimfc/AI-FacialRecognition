@@ -5,7 +5,7 @@ from PIL import Image, ImageTk
 
 # Import the algorithm files
 import knn_algorithm
-import insightface_algorithm
+import vgg16_algorithm
 import deepface_algorithm
 
 # Create the main window
@@ -16,7 +16,7 @@ root.configure(bg="#e0e0e0")
 
 # Global variables for video capture and algorithm choice
 video_capture = None
-algorithm_choice = tk.StringVar(value="KNN")  # Default to KNN
+algorithm_choice = tk.StringVar(value="Select a model")
 results_text = tk.StringVar(value="Results will be displayed here.")
 
 def start_camera():
@@ -59,8 +59,8 @@ def process_frame():
             # Call the appropriate algorithm based on user selection
             if algorithm_choice.get() == "KNN":
                 faces_data = knn_algorithm.process_frame(frame)
-            elif algorithm_choice.get() == "InsightFace":
-                faces_data = insightface_algorithm.process_frame(frame)
+            elif algorithm_choice.get() == "VGG16":
+                faces_data = vgg16_algorithm.process_frame(frame)
             elif algorithm_choice.get() == "DeepFace":
                 faces_data = deepface_algorithm.process_frame(frame)
 
@@ -141,7 +141,7 @@ style.map(
 )
 
 combo_algorithms = ttk.Combobox(frame_controls, textvariable=algorithm_choice,
-                                values=["KNN", "InsightFace", "DeepFace"],
+                                values=["KNN", "VGG16", "DeepFace"],
                                 state="readonly", style='TCombobox')
 combo_algorithms.grid(row=1, column=1, padx=20, pady=20)
 
