@@ -61,7 +61,7 @@ for fname in os.listdir(test_dir):
 test_dataset = create_dataset(test_filepaths, test_age_labels, test_gender_labels, batch_size=BATCH_SIZE, shuffle=False)
 
 # Load the trained model
-model_path = '../ChinGianTerng/vgg16_age_gender_model.h5'  # Replace with your model file
+model_path = 'vgg16_age_gender_model.h5'  # Replace with your model file
 loaded_model = tf.keras.models.load_model(model_path)
 
 # Make predictions on the test dataset

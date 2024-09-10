@@ -82,5 +82,5 @@ def evaluate_on_folder(folder_path):
 
 
 # Test on a folder of images
-test_folder = 'DataSet/test'  # Replace with your test folder path
+test_folder = '../DataSet/test'  # Replace with your test folder path
 evaluate_on_folder(test_folder)

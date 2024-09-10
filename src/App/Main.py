@@ -83,8 +83,8 @@ def process_frame():
             label_video.imgtk = imgtk
             label_video.configure(image=imgtk)
 
-        # Call process_frame again after 100 ms
-        root.after(100, process_frame)
+        # Call process_frame again after x-time milliseconds
+        root.after(50, process_frame)
 
 # Start of UI app frame
 style = ttk.Style()
