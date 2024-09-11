@@ -1,10 +1,10 @@
 import tensorflow as tf
-from tensorflow.keras.applications import EfficientNetB0
+from tensorflow.keras.applications import EfficientNetV2B0
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Dense, Flatten
 
 # Recreate the model architecture
-base_model = EfficientNetB0(weights=None, include_top=False, input_shape=(224, 224, 3))
+base_model = EfficientNetV2B0(weights=None, include_top=False, input_shape=(224, 224, 3))
 x = base_model.output
 x = Flatten()(x)
 x = Dense(128, activation='relu')(x)
@@ -23,9 +23,9 @@ model.compile(
 )
 
 # Load the weights from the .h5 file
-model.load_weights('efficientnet_gender_age_model.h5')
+model.load_weights('../age_gender_model.h5')
 
 # Save the model as .keras format
-model.save('efficientnet_gender_age_model.keras')
+model.save('../age_gender_model.keras')
 
 print("Model has been successfully converted to .keras format.")

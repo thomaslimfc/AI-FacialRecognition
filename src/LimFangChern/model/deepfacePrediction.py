@@ -6,7 +6,7 @@ from ultralytics import YOLO
 from deepface import DeepFace
 
 # Initialize YOLO model for face detection
-model = YOLO('yolov8n-face.pt')  # Ensure this is the correct path to your YOLO model
+model = YOLO('model/yolov8n-face.pt')  # Ensure this is the correct path to your YOLO model
 
 # Create the main window
 root = tk.Tk()
@@ -36,7 +36,7 @@ list_video_devices()
 
 def start_camera():
     global video_capture
-    video_capture = cv2.VideoCapture(1)
+    video_capture = cv2.VideoCapture(0)
     # index 0: laptop original webcam
     # video_capture = cv2.VideoCapture(0)
     process_frame()

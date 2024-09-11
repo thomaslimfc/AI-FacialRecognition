@@ -7,12 +7,14 @@ from tensorflow.keras.applications import EfficientNetV2B0
 from tensorflow.keras.utils import Sequence
 from tensorflow.keras.preprocessing.image import img_to_array, load_img
 
+
 # 1. Extract Labels from Filename
 def extract_labels(filename):
     parts = filename.split('_')
-    age = int(parts[0])
-    gender = 0 if parts[1].lower() == 'm' else 1
+    age = int(parts[0])  # The first part is the age
+    gender = int(parts[1])  # The second part is the gender (1 = male, 0 = female)
     return age, gender
+
 
 # 2. Load and Modify the Pre-trained EfficientNetV2B0 Model
 base_model = EfficientNetV2B0(weights='imagenet', include_top=False, input_shape=(224, 224, 3))
@@ -40,6 +42,7 @@ model.compile(
     loss={'age': 'mse', 'gender': 'binary_crossentropy'},  # Losses for age and gender
     metrics={'age': 'mae', 'gender': 'accuracy'}  # MAE for age, Accuracy for gender
 )
+
 
 # 4. Prepare a Custom Data Generator
 class CustomDataGenerator(Sequence):
@@ -80,25 +83,53 @@ class CustomDataGenerator(Sequence):
 
             # Extract age and gender labels from the filename
             age, gender = extract_labels(filename)
-            age_labels.append(age)
-            gender_labels.append(gender)
+            age_labels.append(float(age))  # Ensure age labels are float
+            gender_labels.append(float(gender))  # Ensure gender labels are float
 
-        return np.array(images), [np.array(age_labels), np.array(gender_labels)]
+        # Convert lists to numpy arrays
+        images = np.array(images)
+        age_labels = np.array(age_labels)
+        gender_labels = np.array(gender_labels)
+
+        return images, {'age': age_labels, 'gender': gender_labels}
 
     def on_epoch_end(self):
         # Shuffle indexes after each epoch
         if self.shuffle:
             np.random.shuffle(self.indexes)
 
-# Set the correct path to your dataset directory
-train_generator = CustomDataGenerator(directory="../DataSet/train")
 
-# 5. Train the Model
-history = model.fit(
-    train_generator,
-    epochs=20,  # Set number of epochs
-    steps_per_epoch=len(train_generator)  # Define the steps per epoch
+# 5. Create a TensorFlow Dataset from the Generator
+def generator_function(directory, batch_size, target_size):
+    def generator():
+        custom_gen = CustomDataGenerator(directory, batch_size=batch_size, target_size=target_size)
+        for images, labels in custom_gen:
+            yield images, labels
+
+    return generator
+
+
+# Set the correct path to your dataset directory
+train_dataset = tf.data.Dataset.from_generator(
+    generator_function("../DataSet/train", batch_size=32, target_size=(224, 224)),
+    output_signature=(
+        tf.TensorSpec(shape=(None, 224, 224, 3), dtype=tf.float32),  # For images
+        {
+            'age': tf.TensorSpec(shape=(None,), dtype=tf.float32),  # For age labels
+            'gender': tf.TensorSpec(shape=(None,), dtype=tf.float32)  # For gender labels
+        }
+    )
 )
 
-# 6. Save the Model
-model.save('efficientnetv2_gender_age_model')  # Save in TensorFlow SavedModel format
+# Prefetch and batch the dataset
+train_dataset = train_dataset.batch(32).prefetch(tf.data.AUTOTUNE)
+
+# 6. Train the Model
+history = model.fit(
+    train_dataset,
+    epochs=20,
+    steps_per_epoch=len(CustomDataGenerator(directory="../DataSet/train"))
+)
+
+# 7. Save the Model
+model.save('finalmodel.keras')  # Save the model

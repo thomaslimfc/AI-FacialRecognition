@@ -6,7 +6,7 @@ from ultralytics import YOLO
 from deepface import DeepFace
 
 # Initialize YOLO model for face detection
-model = YOLO('yolov8n-face.pt')  # Ensure this is the correct path to your YOLO model
+model = YOLO('model/yolov8n-face.pt')  # Ensure this is the correct path to your YOLO model
 
 # Create the main window
 root = tk.Tk()

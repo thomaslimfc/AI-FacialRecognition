@@ -3,8 +3,9 @@ import numpy as np
 import tensorflow as tf
 from sklearn.metrics import precision_score, recall_score, f1_score, classification_report
 
+
 # Define paths
-test_dir = '../DataSet/test'  # Path to your test data
+test_dir = 'DataSet/test'  # Path to your test data
 
 # Define constants
 IMG_HEIGHT, IMG_WIDTH = 224, 224
@@ -49,30 +50,25 @@ test_age_labels = []
 test_gender_labels = []
 
 for fname in os.listdir(test_dir):
-    if fname.endswith('.jpg'):  # Ignore non-image files
-        filepath = os.path.join(test_dir, fname)
-        age, gender = extract_labels_from_filename(fname)
+    filepath = os.path.join(test_dir, fname)
+    age, gender = extract_labels_from_filename(fname)
 
-        if age is not None and gender is not None:
-            test_filepaths.append(filepath)
-            test_age_labels.append(age)
-            test_gender_labels.append(gender)
+    if age is not None and gender is not None:
+        test_filepaths.append(filepath)
+        test_age_labels.append(age)
+        test_gender_labels.append(gender)
 
 test_dataset = create_dataset(test_filepaths, test_age_labels, test_gender_labels, batch_size=BATCH_SIZE, shuffle=False)
 
 # Load the trained model
-model_path = 'my_deepface_model.keras'  # Replace with your model file
+model_path = 'age_gender_model.keras'  # Replace with your model file
 loaded_model = tf.keras.models.load_model(model_path)
 
 # Make predictions on the test dataset
 predictions = loaded_model.predict(test_dataset)
 
-# Assuming your model predicts age and gender separately:
-predicted_age = predictions[:, 0]   # Age predictions
-predicted_gender = predictions[:, 1]  # Gender predictions
-
-# Binarize gender predictions (assuming threshold 0.5)
-y_pred_gender = (predicted_gender > 0.5).astype(int)
+# Extract gender predictions (assuming predictions[1] is gender)
+y_pred_gender = (predictions[1] > 0.5).astype(int)
 
 # Extract true gender values from test dataset
 y_true_gender = np.array([y[1].numpy() for _, y in test_dataset.unbatch()])
