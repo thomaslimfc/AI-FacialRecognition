@@ -4,7 +4,7 @@ from sklearn.model_selection import train_test_split
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 # Set paths
-dataset_path = 'DataSet/train'
+dataset_path = '../DataSet/train'
 labels = []
 
 # Collect labels

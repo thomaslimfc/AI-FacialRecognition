@@ -10,7 +10,7 @@ def train_model():
     history = model.fit(
         train_generator,
         validation_data=val_generator,
-        epochs=10,  # Adjust as needed
+        epochs=20,  # Adjust as needed
         verbose=2  # Use verbose=2 for detailed output
     )
 

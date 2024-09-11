@@ -5,7 +5,7 @@ from sklearn.metrics import precision_score, recall_score, f1_score, classificat
 
 
 # Define paths
-test_dir = 'DataSet/test'  # Path to your test data
+test_dir = '../DataSet/test'  # Path to your test data
 
 # Define constants
 IMG_HEIGHT, IMG_WIDTH = 224, 224
