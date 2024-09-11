@@ -1,54 +1,59 @@
 import cv2
-from deepface import DeepFace
+import tkinter as tk
+from tkinter import ttk
+from PIL import Image, ImageTk
+import numpy as np
+from keras.src.saving import load_model
 from ultralytics import YOLO
 
-model = YOLO('yolov8n-face.pt')
+
+# Initialize YOLO model for face detection
+yolo_model = YOLO('yolov8n-face.pt')
+
+# Load the fine-tuned VGG16 model
+efficientNetV2_model = load_model('../LimFangChern/age_gender_model.keras')
+
+
+# Preprocess the detected face for VGG16 input
+def preprocess_face(face_img):
+    face_img = cv2.resize(face_img, (224, 224))  # Resize to the input size of VGG16
+    face_img = face_img.astype('float32') / 255.0  # Normalize the image
+    face_img = np.expand_dims(face_img, axis=0)  # Add batch dimension
+    return face_img
 
 
 def process_frame(frame):
-    results = model(frame)
+    # Detect faces using YOLOv8
+    results = yolo_model(frame)
     faces_data = []
 
+    # Iterate over detected faces
     for result in results:
-        if result.boxes is not None:
-            for box in result.boxes.data.tolist():
-                x1, y1, x2, y2, score = map(float, box[:5])
-                if score > 0.5:  # Confidence threshold
-                    x1, y1, x2, y2 = map(int, [x1, y1, x2, y2])
-                    cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 255), 2)
-                    face = frame[y1:y2, x1:x2]
+        for box in result.boxes:
+            x1, y1, x2, y2 = map(int, box.xyxy[0])
 
-                    # Convert face to the required format
-                    face = cv2.cvtColor(face, cv2.COLOR_BGR2RGB)
-                    result = DeepFace.analyze(face, actions=['age', 'gender'], enforce_detection=False)
+            # Crop the face from the frame
+            face_crop = frame[y1:y2, x1:x2]
 
-                    # Print result for debugging
-                    # print("Result type:", type(result))
-                    # print("Result content:", result)
+            # Preprocess the face for VGG16 model input
+            face_input = preprocess_face(face_crop)
 
-                    # Define gender mapping
-                    gender_mapping = {'Man': 'Male', 'Woman': 'Female'}
+            # Perform age and gender estimation using VGG16
+            age_gender_prediction = efficientNetV2_model.predict(face_input)
 
-                    if isinstance(result, list) and len(result) > 0:
-                        age = str(result[0]['age'])
-                        age_group = get_age_group(age)
+            # Assuming the model has two heads: one for gender, one for age
+            predicted_gender = np.argmax(age_gender_prediction[0])  # Gender: 0 = Male, 1 = Female
+            predicted_age = age_gender_prediction[0][0][0]  # Age estimate (regression)
+            # print predicted age and gender
+            print(predicted_age)
+            print(predicted_gender)
+            # Convert age to an age group
+            age_group = get_age_group(predicted_age)
+            gender = 'Male' if predicted_gender == 0 else 'Female'
 
-                        gender_dict = result[0]['gender']
-                        if isinstance(gender_dict, dict):
-                            gender_dict = {gender_mapping.get(gender, gender): prob for gender, prob in
-                                           gender_dict.items()}
-                            gender, probability = max(gender_dict.items(), key=lambda item: item[1])
-                            gender_formatted = f"{gender} {probability:.2f}%"
-                        else:
-                            gender_formatted = "unknown"
-                    else:
-                        age_group = "unknown"
-                        gender_formatted = "unknown"
+            # Append the detected data
+            faces_data.append((x1, y1, x2, y2, age_group, gender))
 
-                    # Append data for this face to faces_data
-                    faces_data.append((x1, y1, x2, y2, age_group, gender_formatted))
-
-    # Return the collected face data
     return faces_data
 
 
