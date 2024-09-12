@@ -14,7 +14,7 @@ def train_model():
         verbose=2  # Use verbose=2 for detailed output
     )
 
-    # Save the model
+    # Save the EfficientNetV2 model
     model.save('age_gender_model.h5')
 
     # Print training history
