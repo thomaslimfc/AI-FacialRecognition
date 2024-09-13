@@ -4,7 +4,7 @@ from tkinter import ttk
 from PIL import Image, ImageTk
 
 # Import the algorithm files
-import knn_algorithm
+import resnet50_algorithm
 import vgg16_algorithm
 import deepface_algorithm
 
@@ -57,8 +57,8 @@ def process_frame():
             faces_data = []
 
             # Call the appropriate algorithm based on user selection
-            if algorithm_choice.get() == "KNN":
-                faces_data = knn_algorithm.process_frame(frame)
+            if algorithm_choice.get() == "ResNet50":
+                faces_data = resnet50_algorithm.process_frame(frame)
             elif algorithm_choice.get() == "VGG16":
                 faces_data = vgg16_algorithm.process_frame(frame)
             elif algorithm_choice.get() == "DeepFace":
@@ -141,7 +141,7 @@ style.map(
 )
 
 combo_algorithms = ttk.Combobox(frame_controls, textvariable=algorithm_choice,
-                                values=["KNN", "VGG16", "DeepFace"],
+                                values=["ResNet50", "VGG16", "DeepFace"],
                                 state="readonly", style='TCombobox')
 combo_algorithms.grid(row=1, column=1, padx=20, pady=20)
 
