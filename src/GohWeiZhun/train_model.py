@@ -38,7 +38,7 @@ def load_and_preprocess_image(filepath, target_size=(IMG_HEIGHT, IMG_WIDTH)):
     return img
 
 
-def create_dataset(filepaths, age_labels, gender_labels, batch_size=32, shuffle=True):
+def create_dataset(filepaths, age_labels, gender_labels, batch_size=32, shuffle=False):
     def process_path(filepath, age, gender):
         img = load_and_preprocess_image(filepath)
         return img, (age, gender)  # Return both age and gender as labels
@@ -83,11 +83,16 @@ for fname in os.listdir(test_dir):
         test_gender_labels.append(gender)
 
 # Prepare datasets
-train_dataset = create_dataset(train_filepaths, train_age_labels, train_gender_labels, batch_size=BATCH_SIZE, shuffle=True)
+train_dataset = create_dataset(train_filepaths, train_age_labels, train_gender_labels, batch_size=BATCH_SIZE, shuffle=False)
 test_dataset = create_dataset(test_filepaths, test_age_labels, test_gender_labels, batch_size=BATCH_SIZE, shuffle=False)
 
-# Build the ResNet50 model from scratch with two outputs (age and gender)
-base_model = ResNet50(weights=None, include_top=False, input_shape=(IMG_HEIGHT, IMG_WIDTH, 3))  # Training from scratch
+# Build the ResNet50 model with transfer learning
+base_model = ResNet50(weights='imagenet', include_top=False, input_shape=(IMG_HEIGHT, IMG_WIDTH, 3))
+
+# Freeze the base model layers
+for layer in base_model.layers:
+    layer.trainable = False
+
 x = base_model.output
 x = GlobalAveragePooling2D()(x)
 
@@ -98,7 +103,7 @@ gender_output = Dense(1, activation='sigmoid', name='gender_output')(x)  # Gende
 model = Model(inputs=base_model.input, outputs=[age_output, gender_output])
 
 # Compile the model with different losses for age and gender
-model.compile(optimizer=Adam(learning_rate=0.0001),  # Lower learning rate for scratch training
+model.compile(optimizer=Adam(learning_rate=0.0001),  # Lower learning rate for transfer learning
               loss={'age_output': 'mean_squared_error', 'gender_output': 'binary_crossentropy'},
               metrics={'age_output': 'mae', 'gender_output': 'accuracy'})
 
@@ -106,6 +111,6 @@ model.compile(optimizer=Adam(learning_rate=0.0001),  # Lower learning rate for s
 history = model.fit(train_dataset, epochs=20, validation_data=test_dataset)
 
 # Save the model
-model.save('resnet50_age_gender_model.h5')
+model.save('ResNet50.keras')
 
 print("Model training completed and saved.")

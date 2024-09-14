@@ -3,17 +3,19 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 import os
 import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 
 # Load the saved model
-model = load_model('ResNet50.h5')
+model = load_model('ResNet50.keras')
 
 
 # Function to preprocess the image
 def preprocess_image(img_path, target_size=(224, 224)):
-    img = load_img(img_path, target_size=target_size)  # Load the image and resize it
-    img_array = img_to_array(img)  # Convert the image to a numpy array
+    img = load_img(img_path, target_size=target_size)  # Load and resize image
+    img_array = img_to_array(img)  # Convert to numpy array
     img_array = tf.expand_dims(img_array, axis=0)  # Add batch dimension
-    img_array /= 255.0  # Normalize the image to [0, 1]
+    img_array /= 255.0  # Normalize to [0, 1]
     return img_array
 
 
@@ -40,11 +42,15 @@ def predict_single_image(img_path):
     return predicted_age, predicted_gender
 
 
-# Function to test the model on a folder of images and calculate accuracy/MAE
+# Function to test the model on a folder of images, calculate accuracy/MAE, and plot confusion matrix
 def evaluate_on_folder(folder_path):
     gender_correct = 0
     total_images = 0
     age_mae_sum = 0
+
+    # Lists to store true and predicted labels for confusion matrix
+    true_genders = []
+    predicted_genders = []
 
     for img_file in os.listdir(folder_path):
         if img_file.lower().endswith(('png', 'jpg', 'jpeg')):  # Filter image files
@@ -58,6 +64,9 @@ def evaluate_on_folder(folder_path):
 
             # Compare gender (actual: 0 = Female, 1 = Male)
             predicted_gender_label = 1 if predicted_gender > 0.5 else 0
+            true_genders.append(actual_gender)
+            predicted_genders.append(predicted_gender_label)
+
             if predicted_gender_label == actual_gender:
                 gender_correct += 1
 
@@ -80,7 +89,20 @@ def evaluate_on_folder(folder_path):
     print(f"Gender Prediction Accuracy: {gender_accuracy:.2f}%")
     print(f"Mean Absolute Error (MAE) for Age: {age_mae:.2f}")
 
+    # Generate confusion matrix
+    cm = confusion_matrix(true_genders, predicted_genders)
+
+    # Print the confusion matrix to check values
+    print("\nConfusion Matrix:")
+    print(cm)
+
+    # Plot confusion matrix
+    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=["Female", "Male"])
+    disp.plot(cmap=plt.cm.Blues)
+    plt.title('Confusion Matrix for Gender Classification')
+    plt.show()
+
 
 # Test on a folder of images
-test_folder = 'DataSet/test'  # Replace with your test folder path
+test_folder = '../DataSet/test'  # Replace with your test folder path
 evaluate_on_folder(test_folder)
