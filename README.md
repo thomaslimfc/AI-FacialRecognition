@@ -14,7 +14,7 @@ This project aims to view the accuracy of three different facial recognition mod
 ## Usage
 Please install all the necessary libraries before running the program to ensure smooth operation.
 
-	The program to run the live-video UI interface can be run from Main.py in the App folder. The main file will launch a UI that will allow you to select a model to use for real-time facial detail estimation. The detected faces will have a bounding box drawn around the face with the details printed below the bottom border of the bounding box.
+The program to run the live-video UI interface can be run from Main.py in the App folder. The main file will launch a UI that will allow you to select a model to use for real-time facial detail estimation. The detected faces will have a bounding box drawn around the face with the details printed below the bottom border of the bounding box.
 
 	The program scripts to run the MAE test and Classification Report can be found as test.py and report.py under each of the group member's folders. The test file may take at least 3 minutes to run, as it will scan through the test dataset before outputting a result. The report file will print the classification report with the metrics Precision, Recall, F1 Score, Support, and macro and weighted averages.
 
