@@ -1,5 +1,5 @@
-# Image Processing & Computer Vision
-- Assignment Title: Facial Recognition
+# Image Processing & Computer Vision: Facial Recognition
+- Assignment Title: Facial Detail Estimation
 - Grade: A
 - Bachelor of Software Engineering (RSW) Year2 Sem1 [TARUMT Penang]
 - Course: BACS2003 Artificial Intelligence
@@ -9,9 +9,6 @@
 - Goh Wei Zhun
 - Thomas Lim
 <br>Their dedication and expertise made this repository possible, ensuring compatibility and functionality across various components.
-
-
-# Computer Vision - Facial Detail Estimation
 
 ## Description
 This project aims to view the accuracy of three different facial recognition models, ResNet-50, VGG-16, and DeepFace, in estimating age and gender of faces detected from a video feed, and to measure the performance of the models by using metrics such as precision, recall, F1 score and MAE.
