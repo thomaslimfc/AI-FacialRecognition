@@ -20,6 +20,6 @@ Please install all the necessary libraries before running the program to ensure 
 
 # Collaborators:
 - [Chin Gian Terng](mailto:chingt-pm23@student.tarc.edu.my)
-- [Goh Wei Zhun](gohwz-pm23@student.tarc.edu.my)
-- [Thomas Lim](limfc-pp21@student.tarc.edu.my)
+- [Goh Wei Zhun](mailto:gohwz-pm23@student.tarc.edu.my)
+- [Thomas Lim](mailto:limfc-pp21@student.tarc.edu.my)
 <br>Their dedication and expertise made this repository possible, ensuring compatibility and functionality across various components.
