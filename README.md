@@ -1,5 +1,5 @@
 # Image Processing & Computer Vision: Facial Recognition
-- Assignment Title: Facial Detail Estimation
+- Assignment Title: Facial Detail Estimation using YOLOv8
 - Grade: A
 - Bachelor of Software Engineering (RSW) Year2 Sem1 [TARUMT Penang]
 - Course: BACS2003 Artificial Intelligence
