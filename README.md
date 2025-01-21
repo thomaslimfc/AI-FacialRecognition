@@ -4,8 +4,6 @@
 - Bachelor of Software Engineering (RSW) Year2 Sem1 [TARUMT Penang]
 - Course: BACS2003 Artificial Intelligence
 
-
-
 ## Description
 This project aims to view the accuracy of three different facial recognition models, ResNet-50, VGG-16, and DeepFace, in estimating age and gender of faces detected from a video feed, and to measure the performance of the models by using metrics such as precision, recall, F1 score and MAE.
 
@@ -21,6 +19,6 @@ The program scripts to run the MAE test and Classification Report can be found a
 ## Collaborators:
 - [Chin Gian Terng](mailto:chingt-pm23@student.tarc.edu.my)
 - [Goh Wei Zhun](mailto:gohwz-pm23@student.tarc.edu.my)
-- [Thomas Lim](mailto:limfc-pp21@student.tarc.edu.my)
+- [Thomas Fang-chern Lim](mailto:limfc-pp21@student.tarc.edu.my)
 <br>
 Their dedication and expertise made this repository possible, ensuring compatibility and functionality across various components.
