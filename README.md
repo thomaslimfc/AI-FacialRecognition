@@ -19,7 +19,7 @@ Please install all the necessary libraries before running the program to ensure 
 	The program scripts to run the MAE test and Classification Report can be found as test.py and report.py under each of the group member's folders. The test file may take at least 3 minutes to run, as it will scan through the test dataset before outputting a result. The report file will print the classification report with the metrics Precision, Recall, F1 Score, Support, and macro and weighted averages.
 
 # Collaborators:
-- [Chin Gian Terng](chingt-pm23@student.tarc.edu.my)
+- [Chin Gian Terng](mailto:chingt-pm23@student.tarc.edu.my)
 - [Goh Wei Zhun](gohwz-pm23@student.tarc.edu.my)
 - [Thomas Lim](limfc-pp21@student.tarc.edu.my)
 <br>Their dedication and expertise made this repository possible, ensuring compatibility and functionality across various components.
